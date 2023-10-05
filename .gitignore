@@ -4,6 +4,7 @@
 # data/
 data/raw
 
+
 env/
 env
 dev/
@@ -110,3 +111,6 @@ target/
 
 # Hydra logs
 outputs
+/mlruns
+/plot
+/model
