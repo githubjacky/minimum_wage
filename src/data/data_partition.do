@@ -1,5 +1,6 @@
 clear
-use $rdata/mu1991to2020.dta
+local data "/Users/jackyyeh/github/minimum_wageML/data/raw/mu1991to2020.dta"
+use `data'
 
 ********************************************************************************
 
@@ -18,11 +19,10 @@ use $rdata/mu1991to2020.dta
 keep year countyname sex age mar edu eduyr hour earn_ad stat1 cpi
 
 * deal with the missing value
-drop if countyname == ""  // type: str
-
-
-drop if year == . | sex == . | age == . | mar == .  // type: double
-drop if edu == . | eduyr == . | hour == . | earn_ad == . | stat1 == .
+* type(countyname) = "str"
+drop if countyname == ""  // type: str \\
+    year == . | sex == . | age == . | mar == .  // type: double
+    edu == . | eduyr == . | hour == . | earn_ad == . | stat1 == .
 
 * slect the worker 
 drop if earn_ad <= 0 | hour <= 0 // dropped observations: 898,111 + 5,195

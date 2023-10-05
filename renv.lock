@@ -2124,7 +2124,8 @@
     "stringi": {
       "Package": "stringi",
       "Version": "1.7.7",
-      "Source": "Cellar",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "stats",
@@ -2563,20 +2564,6 @@
         "tools"
       ],
       "Hash": "be07d23211245fc7d4209f54c4e4ffc8"
-    },
-    "xgboost": {
-      "Package": "xgboost",
-      "Version": "1.7.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Matrix",
-        "R",
-        "data.table",
-        "jsonlite",
-        "methods"
-      ],
-      "Hash": "6b8d09cf8ffc148162a4d57d01e61490"
     },
     "xml2": {
       "Package": "xml2",

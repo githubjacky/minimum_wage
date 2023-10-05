@@ -22,12 +22,13 @@ RUN Rscript -e "install.packages('doParallel')"
 RUN Rscript -e "install.packages('iterators')"
 RUN Rscript -e "install.packages('parallel')"
 RUN Rscript -e "install.packages('glmnet')"
-RUN Rscript -e "install.packages('xgboost')"
 RUN Rscript -e "install.packages('ranger')"
 RUN Rscript -e "install.packages('mlflow')"
 RUN Rscript -e "install.packages('IRkernel'); IRkernel::installspec(user=FALSE)"
 RUN Rscript -e "install.packages('finetune')"
 RUN Rscript -e "install.packages('DataExplorer')"
+# RUN Rscript -e "install.packages('xgboost')"
+
 
 EXPOSE 8888
 EXPOSE 5000
