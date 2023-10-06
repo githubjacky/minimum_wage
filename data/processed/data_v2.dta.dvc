@@ -1,0 +1,5 @@
+outs:
+- md5: d92eddc061f491cc3666cf75ce62239a
+  size: 12414987
+  hash: md5
+  path: data_v2.dta

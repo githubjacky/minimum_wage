@@ -19,10 +19,10 @@ use `data'
 keep year countyname sex age mar edu eduyr hour earn_ad stat1 cpi
 
 * deal with the missing value
-* type(countyname) = "str"
-drop if countyname == ""  // type: str \\
-    year == . | sex == . | age == . | mar == .  // type: double
-    edu == . | eduyr == . | hour == . | earn_ad == . | stat1 == .
+* type(countyname) = "str", others are double
+drop if countyname == ""
+drop if year == . | sex == . | age == . | mar == .
+drop if edu == . | eduyr == . | hour == . | earn_ad == . | stat1 == .
 
 * slect the worker 
 drop if earn_ad <= 0 | hour <= 0 // dropped observations: 898,111 + 5,195
@@ -30,7 +30,8 @@ drop if stat1 == 1 | stat1 == 2  // dropped observations: 43,130  + 150,902
 drop stat1
 
 * specify the year: 2000 - 2006
-drop if year < 2000 | year > 2006 // 498,680(dropped) / 651,814(total)
+* 498,680(dropped) / 651,814(total)
+drop if year < 2000 | year > 2006 
 drop year
 
 recode sex (2=0)
@@ -88,8 +89,6 @@ replace group = 3 if 95*2 < wage
 
 
 save $wdata/training.dta, replace
-
-
 ********************************************************************************
 
 * create prediction data
