@@ -1,0 +1,35 @@
+estimator: XGB
+objective: binary:logistic
+tree_method: hist
+device: cpu
+nthread: -1
+n_estimators:
+  low: 0
+  up: 2000
+max_depth:
+  low: 5
+  up: 20
+min_child_weight:
+  low: 2
+  up: 8
+learning_rate:
+  low: 0.005
+  up: 0.5
+  log: True
+subsample:
+  low: 0.6
+  up: 1.0
+colsample_bytree:
+  low: 0.1
+  up: 1
+  step: 0.01
+reg_alpha:
+  low: 0
+  up: 5
+reg_lambda:
+  low: 0
+  up: 5
+gamma:
+  low: 0.7
+  up: 1.0
+  step: 0.1

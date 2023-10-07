@@ -111,6 +111,5 @@ target/
 
 # Hydra logs
 outputs
-/mlruns
 /plot
 /model

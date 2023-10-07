@@ -1,0 +1,60 @@
+defaults:
+    - model: xgboost
+    - _self_
+
+
+preprocess:
+  raw_path: data/processed/data_v2.csv
+  prediction_strategy: binary
+  imbalance_strategy: ignore
+  baking_strategy: one_hot
+  X_col:
+    - age
+    - eduyr
+    - work_exp
+    - countyname_南投縣
+    - countyname_嘉義市
+    - countyname_嘉義縣
+    - countyname_基隆市
+    - countyname_宜蘭縣
+    - countyname_屏東縣
+    - countyname_彰化縣
+    - countyname_新竹市
+    - countyname_新竹縣
+    - countyname_桃園縣
+    - countyname_澎湖縣
+    - countyname_臺中市
+    - countyname_臺中縣
+    - countyname_臺北市
+    - countyname_臺北縣
+    - countyname_臺南市
+    - countyname_臺南縣
+    - countyname_臺東縣
+    - countyname_花蓮縣
+    - countyname_苗栗縣
+    - countyname_雲林縣
+    - countyname_高雄市
+    - countyname_高雄縣
+    - mar_有配偶(含與人同居)
+    - mar_未婚
+    - mar_配偶死亡
+    - mar_離婚、分居
+    - is_female_yes
+    - is_teen_yes
+    - is_lths_yes
+    - is_lths30_yes
+    - is_hsl_yes
+    - is_hsl30_yes
+  y_col: group1_treatment
+  test_size: 0.2
+  random_state: 1126
+  verbose: True
+
+
+tuning:
+  scoring: scorer_pr_auc
+  direction: maximize  # minimize, maximize
+  cv: 5
+  sampler: TPESampler
+  n_trials: 10
+  verbose: False
