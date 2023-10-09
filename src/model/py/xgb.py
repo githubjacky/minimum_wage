@@ -19,10 +19,10 @@ def XGB_params(p: DictConfig, trial: Trial):
         'objective': p.objective,
         'device': p.device,
         'nthread' : p.nthread,
-        'class_weight': 'balanced',
         # default: hist
         'tree_method': p.tree_method,
-        "n_estimators" : trial.suggest_int('n_estimators', p.n_estimators.low, p.n_estimators.up),
+        'scale_pos_weight' : trial.suggest_int('scale_pos_weight', p.scale_pos_weight.low, p.scale_pos_weight.up),
+        'n_estimators' : trial.suggest_int('n_estimators', p.n_estimators.low, p.n_estimators.up),
         # default: 6
         'max_depth':trial.suggest_int('max_depth', p.max_depth.low, p.max_depth.up),
         # default: 1
@@ -62,7 +62,7 @@ class XGB(BaseModel):
         self.sampler = sampler
         self.n_trials = n_trials
 
-    def fit(self, X_train, y_train, verbose):
+    def fit(self, X_train, y_train):
         study = self.optimize(
             X_train,
             y_train,
@@ -71,6 +71,5 @@ class XGB(BaseModel):
             self.cv,
             self.sampler,
             self.n_trials,
-            verbose
         )
 

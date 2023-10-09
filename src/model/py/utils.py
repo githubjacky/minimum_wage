@@ -1,9 +1,11 @@
 from functools import partial
+import logging
 import numpy as np
 from numpy.typing import ArrayLike
 import optuna
 from optuna.integration.mlflow import MLflowCallback
 import pandas as pd
+from pathlib import Path
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import precision_recall_curve, auc
 from typing import Callable, List, Optional, Tuple
@@ -133,6 +135,11 @@ class BaseModel:
 
         self.study_name = study_name
 
+        log_dir = Path(f"log/{model_name}")
+        log_dir.mkdir(parents = True, exist_ok = True)
+        self.log_path = log_dir / f'{study_name}.log'
+        self.log_path.unlink(missing_ok = True)
+
     def __objective(self, trial, X_train, y_train, scoring: str | Callable, cv: int):
         return (
             cross_val_score(
@@ -153,7 +160,6 @@ class BaseModel:
         cv: int,
         sampler,
         n_trials: int,
-        verbose: bool
     ):
         objective = partial(
             self.__objective,
@@ -165,18 +171,29 @@ class BaseModel:
 
         metric_name = scoring.__name__ if isinstance(scoring, Callable) else scoring
         mlflc = MLflowCallback(metric_name = metric_name)
+
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.FileHandler(self.log_path, mode="w"))
+        optuna.logging.enable_propagation()
+        optuna.logging.disable_default_handler()
+
         study = optuna.create_study(
             direction = direction,
             sampler = sampler,
             study_name = self.study_name
         )
 
-        show_progress_bar = not verbose
+        logger.info("Start optimization.")
         study.optimize(
             objective,
             n_trials,
             callbacks = [mlflc],
-            show_progress_bar = show_progress_bar
         )
+
+        with open(self.log_path) as f:
+            assert f.readline().startswith("A new study created")
+            assert f.readline() == "Start optimization.\n"
 
         return study

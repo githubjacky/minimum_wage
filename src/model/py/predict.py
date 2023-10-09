@@ -37,7 +37,7 @@ def main(cfg: DictConfig):
         eval(cfg.tuning.sampler)(),
         cfg.tuning.n_trials
     )
-    estimator.fit(X_train, y_train, cfg.tuning.verbose)
+    estimator.fit(X_train, y_train)
 
 
 if __name__ == "__main__":

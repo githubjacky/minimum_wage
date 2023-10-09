@@ -57,4 +57,3 @@ tuning:
   cv: 5
   sampler: TPESampler
   n_trials: 10
-  verbose: False
