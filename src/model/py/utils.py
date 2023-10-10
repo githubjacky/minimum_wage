@@ -1,15 +1,12 @@
-from functools import partial
-import logging
 import numpy as np
 from numpy.typing import ArrayLike
-import optuna
-from optuna.integration.mlflow import MLflowCallback
 import pandas as pd
-from pathlib import Path
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import precision_recall_curve, auc
-from typing import Callable, List, Optional, Tuple
-import xgboost as xgb
+from sklearn.model_selection import train_test_split
+from typing import List, Optional, Tuple
+from sklearn.metrics import (
+    precision_recall_curve,
+    auc
+)
 
 
 class DataSet:
@@ -37,18 +34,28 @@ class DataSet:
         raw = pd.read_csv(data_path)
 
         cols = [
-            'is_female', 'is_teen', 'is_lths', 'is_lths30',
-            'is_hsl', 'is_hsl30', 'is_teen', 'group1'
+            'is_female', 'is_lths', 'is_lths30',
+            'is_hsl', 'is_hsl30', 'is_teen',
         ]
-        pre_processed = pd.get_dummies(raw, columns = cols, drop_first = True)
-        cols = ['mar']
-        pre_processed = pd.get_dummies(pre_processed, columns = cols)
+        pre_processed = pd.get_dummies(
+            raw,
+            columns = cols,
+            drop_first = True,
+            dtype = float
+        )
+        pre_processed = pd.get_dummies(pre_processed, columns = ['mar'], dtype = float)
 
         match prediction_stragety:
             case 'multi-label':
                 pre_processed['group2_factor'] = pd.factorize(pre_processed['group2'])[0]
                 self.y_col = ['group2_factor']
             case _:  # binary
+                pre_processed = pd.get_dummies(
+                    pre_processed,
+                    columns = ['group1'],
+                    drop_first = True,
+                    dtype = int
+                )
                 self.y_col = ['group1_treatment']
 
         match imbalance_strategy:
@@ -66,7 +73,11 @@ class DataSet:
             case 'xgb_encode':
                 self.xgb_encode = True
             case _:  # one_hot
-                 pre_processed = pd.get_dummies(pre_processed, columns = ['countyname'])
+                 pre_processed = pd.get_dummies(
+                    pre_processed,
+                    columns = ['countyname'],
+                    dtype = float
+                )
 
         self.df = pre_processed
         self.prediction_stragety = prediction_stragety
@@ -90,13 +101,9 @@ class DataSet:
         verbose: bool = True
     ) -> Tuple[List, List, List, List]:
 
-        Xcol = self.X_col if X_col is None else X_col
-        ycol = self.y_col if y_col is None else y_col
-
-        X = self.df[Xcol].to_numpy()
-        y = self.df[ycol].to_numpy()
-
-
+        X = self.df[self.X_col if X_col is None else X_col]
+        y = self.df[self.y_col if y_col is None else y_col
+]
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
@@ -111,89 +118,14 @@ class DataSet:
         return X_train, X_test, y_train, y_test
 
 
-def scorer_pr_auc(estimator, X, y):
-    prob = estimator.predict_proba(X)[:, 1]
+def scorer_pr_auc(model, X, y):
+    prob = model.predict_proba(X)[:, 1]
     precision, recall, _ = precision_recall_curve(y, prob)
 
     return auc(recall, precision)
 
+def precision_1(model, X, y):
+    pred = model.predict(X)
+    metric_dict = classification_report(y, pred, output_dict = True)
 
-class BaseModel:
-    def __init__(
-        self,
-        params: Callable,
-        model_name: str,
-        study_name: str
-    ):
-        match model_name:
-            case 'elnet':
-                pass
-            case 'rf':
-                pass
-            case _:  # xgboost
-                self.model = lambda trial: xgb.XGBClassifier(**params(trial))
-
-        self.study_name = study_name
-
-        log_dir = Path(f"log/{model_name}")
-        log_dir.mkdir(parents = True, exist_ok = True)
-        self.log_path = log_dir / f'{study_name}.log'
-        self.log_path.unlink(missing_ok = True)
-
-    def __objective(self, trial, X_train, y_train, scoring: str | Callable, cv: int):
-        return (
-            cross_val_score(
-                self.model(trial),
-                X_train,
-                y_train,
-                scoring = scoring,
-                cv = cv
-            ).mean()
-        )
-
-    def optimize(
-        self,
-        X_train,
-        y_train,
-        scoring: Callable | str,
-        direction: str,
-        cv: int,
-        sampler,
-        n_trials: int,
-    ):
-        objective = partial(
-            self.__objective,
-            X_train = X_train,
-            y_train = y_train,
-            scoring = scoring,
-            cv = cv
-        )
-
-        metric_name = scoring.__name__ if isinstance(scoring, Callable) else scoring
-        mlflc = MLflowCallback(metric_name = metric_name)
-
-
-        logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
-        logger.addHandler(logging.FileHandler(self.log_path, mode="w"))
-        optuna.logging.enable_propagation()
-        optuna.logging.disable_default_handler()
-
-        study = optuna.create_study(
-            direction = direction,
-            sampler = sampler,
-            study_name = self.study_name
-        )
-
-        logger.info("Start optimization.")
-        study.optimize(
-            objective,
-            n_trials,
-            callbacks = [mlflc],
-        )
-
-        with open(self.log_path) as f:
-            assert f.readline().startswith("A new study created")
-            assert f.readline() == "Start optimization.\n"
-
-        return study
+    return metric_dict['1']['precision']

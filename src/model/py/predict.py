@@ -1,8 +1,7 @@
 import hydra
 from omegaconf import DictConfig
-from optuna.samplers import TPESampler
 
-from utils import DataSet, scorer_pr_auc
+from utils import DataSet
 from xgb import XGB
 
 
@@ -20,24 +19,15 @@ def main(cfg: DictConfig):
         cfg.preprocess.prediction_strategy,
         cfg.preprocess.imbalance_strategy,
         cfg.preprocess.baking_strategy,
-        cfg.tuning.scoring
+        cfg.tune.sampler,
+        cfg.model.eval_metric
     ))
-    scoring = (
-        eval(cfg.tuning.scoring)
-        if cfg.tuning.scoring == 'scorer_pr_auc'
-        else
-        cfg.tuning.scoring
-    )
-    estimator = eval(cfg.model.estimator)(
-        cfg.model,
-        study_name,
-        scoring,
-        cfg.tuning.direction,
-        cfg.tuning.cv,
-        eval(cfg.tuning.sampler)(),
-        cfg.tuning.n_trials
-    )
-    estimator.fit(X_train, y_train)
+
+    estimator = eval(cfg.model.estimator)(cfg, study_name)
+    best_model_param = estimator.fit(X_train, y_train)
+
+    if cfg.mode.test:
+        estimator.test(best_model_param, X_train, X_test, y_train, y_test)
 
 
 if __name__ == "__main__":

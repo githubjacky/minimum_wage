@@ -1,13 +1,17 @@
 defaults:
-    - model: xgboost
+    - model: xgb
     - _self_
+
+
+mode:
+  test: true
 
 
 preprocess:
   raw_path: data/processed/data_v2.csv
   prediction_strategy: binary
   imbalance_strategy: ignore
-  baking_strategy: one_hot
+  baking_strategy: onehot
   X_col:
     - age
     - eduyr
@@ -51,9 +55,7 @@ preprocess:
   verbose: True
 
 
-tuning:
-  scoring: scorer_pr_auc
-  direction: maximize  # minimize, maximize
+tune:
   cv: 5
   sampler: TPESampler
-  n_trials: 10
+  n_trials: 1

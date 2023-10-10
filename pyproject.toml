@@ -7,10 +7,11 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 hydra-core = "^1.1.1"
 loguru = "^0.7.0"
-pandas = "^2.0.3"
+numpy = "^1.26.0"
+pandas = "2.0.0"
 
 
 [tool.poetry.group.model.dependencies]
