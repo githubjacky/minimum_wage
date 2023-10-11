@@ -1,5 +1,5 @@
 clear
-local data "/Users/jackyyeh/github/minimum_wageML/data/raw/mu1991to2020.dta"
+local data "/Users/jackyyeh/github/minimum_wage/data/raw/mu1991to2020.dta"
 use `data'
 
 ********************************************************************************
@@ -102,7 +102,59 @@ replace group2 = "control2" if 95*2 < wage
 label variable group2 "response variable v2(3 category)"
 
 
-save /Users/jackyyeh/github/minimum_wageML/data/processed/data_v2, replace
+* recode mar(martial status)
+gen martial_status = "unmarried"
+replace martial_status = "married_cohabited" if mar == 2
+replace martial_status = "divorced_separated" if mar == 3
+replace martial_status = "widow_widower" if mar == 4
+drop mar
+rename martial_status mar
+
+
+* recode edu(educataion level)
+gen eduac = "illiterate"
+replace eduac = "self_study" if edu == 2
+replace eduac = "elementary" if edu == 3
+replace eduac = "junior_high" if edu == 4
+replace eduac = "senior_high_vocational" if edu == 5
+replace eduac = "junior_college" if edu == 6
+replace eduac = "college" if edu == 7
+replace eduac = "master" if edu == 8
+replace eduac = "doctoral" if edu == 9
+drop edu eduyr
+rename eduac edu
+
+
+* recode county name
+gen county = "Nantou_County"
+replace county = "Chiayi_City" if countyname == "嘉義市"
+replace county = "Chiayi_County" if countyname == "嘉義縣"
+replace county = "Keelung_City" if countyname == "基隆市"
+replace county = "Yilan_County" if countyname == "宜蘭縣"
+replace county = "Pingtung_County" if countyname == "屏東縣"
+replace county = "Changhua_County" if countyname == "彰化縣"
+replace county = "Hsinchu_City" if countyname == "新竹市"
+replace county = "Hsinchu_County" if countyname == "新竹縣"
+replace county = "Taoyuan_County" if countyname == "桃園縣"
+replace county = "Penghu_County" if countyname == "澎湖縣"
+replace county = "Taichung_City" if countyname == "臺中市"
+replace county = "Taichung_County" if countyname == "臺中縣"
+replace county = "Taipei_City" if countyname == "臺北市"
+replace county = "Taipei_County" if countyname == "臺北縣"
+replace county = "Tainan_City" if countyname == "臺南市"
+replace county = "Tainan_County" if countyname == "臺南縣"
+replace county = "Taidong_County" if countyname == "臺東縣"
+replace county = "Hualian_County" if countyname == "花蓮縣"
+replace county = "Miaoli_County" if countyname == "苗栗縣"
+replace county = "Yunlin_County" if countyname == "雲林縣"
+replace county = "Gaoxiong_City" if countyname == "高雄市"
+replace county = "Gaoxiong_County" if countyname == "高雄縣"
+drop countyname
+rename county countyname
+
+
+save /Users/jackyyeh/github/minimum_wage/data/processed/data_v2, replace
+export delimited /Users/jackyyeh/github/minimum_wage/data/processed/data_v2, replace
 ********************************************************************************
 
 * create prediction data
