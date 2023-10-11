@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import hydra
 from omegaconf import DictConfig
 
-from utils import DataSet
+from dataset import DataSet
 from xgb import XGB
 
 
