@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import hydra
 from omegaconf import DictConfig
 
@@ -23,6 +24,7 @@ def main(cfg: DictConfig):
         cfg.model.eval_metric
     ))
 
+    load_dotenv()
     estimator = eval(cfg.model.estimator)(cfg, study_name)
     best_model_param = estimator.fit(X_train, y_train)
 

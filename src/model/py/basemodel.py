@@ -72,7 +72,10 @@ class BaseModel:
                 _X_train = X_train.to_numpy(),
                 _y_train = y_train.to_numpy(),
             )
-        mlflc = MLflowCallback(metric_name = self.cfg.model.eval_metric)
+        mlflc = MLflowCallback(
+            tracking_uri = 'https://dagshub.com/githubjacky/minimum_wage.mlflow',
+            metric_name = self.cfg.model.eval_metric
+        )
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)

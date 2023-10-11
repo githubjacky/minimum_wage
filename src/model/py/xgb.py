@@ -102,6 +102,7 @@ class XGB(BaseModel):
             'eval_metric': strategy_list[5]
         }
 
+        mlflow.set_tracking_uri('https://dagshub.com/githubjacky/minimum_wage.mlflow')
         exper = mlflow.set_experiment('test')
         with mlflow.start_run(
             experiment_id = exper.experiment_id,
