@@ -5,6 +5,9 @@ renv/
 # data/
 data/raw
 
+# colab installed package
+cudf-cu11
+dvc
 
 env/
 env
