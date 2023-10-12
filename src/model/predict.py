@@ -6,7 +6,7 @@ from dataset import DataSet
 from xgb import XGB
 
 
-@hydra.main(config_path="../../../config", config_name="main", version_base=None)
+@hydra.main(config_path="../../config", config_name="main", version_base=None)
 def main(cfg: DictConfig):
     data = DataSet(cfg.preprocess.raw_path)
     X_train, X_test, y_train, y_test = data.fetch_train_test(
