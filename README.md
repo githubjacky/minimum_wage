@@ -28,7 +28,7 @@ dependencies:
 ```sh
 %% shell 
 
-!poetry run pip install --local \
+poetry run pip install --local \
     cudf-cu11 cuml-cu11 aiohttp \
     --extra-index-url=https://pypi.nvidia.com
 ```
