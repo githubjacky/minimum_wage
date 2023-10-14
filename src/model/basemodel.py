@@ -45,11 +45,14 @@ class BaseModel:
             random_state = self.cfg.preprocess.random_state
         )
         val_eval_metrics = []
-        for train_idx, val_idx in kf.split(_X_train, _y_train):
-            X_train = _X_train[train_idx]
-            X_val = _X_train[val_idx]
-            y_train = _y_train[train_idx]
-            y_val = _y_train[val_idx]
+        for train_idx, val_idx in kf.split(
+            _X_train.values.tolist(),
+            _y_train.values.tolist()
+        ):
+            X_train = _X_train.iloc[train_idx]
+            X_val = _X_train.iloc[val_idx]
+            y_train = _y_train.iloc[train_idx]
+            y_val = _y_train.iloc[val_idx]
 
             # model specific train
             val_eval_metrics.append(
@@ -60,18 +63,11 @@ class BaseModel:
 
     def fit(self, X_train, y_train):
         # the objective function should implemented with model spefic class
-        if self.cfg.model.device != 'cpu':
-            objective = partial(
-                self.objective,
-                _X_train = X_train,
-                _y_train = y_train,
-            )
-        else:
-            objective = partial(
-                self.objective,
-                _X_train = X_train.to_numpy(),
-                _y_train = y_train.to_numpy(),
-            )
+        objective = partial(
+            self.objective,
+            _X_train = X_train,
+            _y_train = y_train,
+        )
         mlflc = MLflowCallback(
             tracking_uri = 'https://dagshub.com/githubjacky/minimum_wage.mlflow',
             metric_name = self.cfg.model.eval_metric

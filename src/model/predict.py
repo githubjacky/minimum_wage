@@ -2,8 +2,12 @@ from dotenv import load_dotenv
 import hydra
 from omegaconf import DictConfig
 
-from dataset import DataSet
-from xgb import XGB
+if __name__ == "__main__":
+    from dataset import DataSet
+    from xgb import XGB
+else:
+    from src.model.dataset import DataSet
+    from src.model.xgb import XGB
 
 
 @hydra.main(config_path="../../config", config_name="main", version_base=None)

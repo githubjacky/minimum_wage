@@ -6,7 +6,6 @@ from typing import List, Optional, Tuple
 
 
 class DataSet:
-
     X_col = [
         'age', 'work_exp', 'is_female_yes', 'is_lths_yes',
        'is_lths30_yes', 'is_hsl_yes', 'is_hsl30_yes', 'is_teen_yes',
